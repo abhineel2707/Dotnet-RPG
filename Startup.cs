@@ -13,6 +13,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using RPG_API.Services.CharacterService;
 using AutoMapper;
+using RPG_API.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace RPG_API
 {
@@ -28,14 +30,18 @@ namespace RPG_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RPG_API", Version = "v1" });
             });
             services.AddAutoMapper(typeof(Startup));
-            services.AddScoped<ICharacterService, CharacterService>();
+            // services.AddScoped<ICharacterService, CharacterService>();
+            services.AddScoped<ICharacterService, CharacterServiceDb>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
